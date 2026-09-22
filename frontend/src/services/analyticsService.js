@@ -7,3 +7,9 @@ export async function getLogLevelAnalytics() {
 export async function getServiceAnalytics() {
   return apiRequest("/api/analytics/services");
 }
+
+export async function getLogVolumeAnalytics(minutes = 30) {
+  return apiRequest(
+    `/api/analytics/volume?minutes=${minutes}`
+  );
+}

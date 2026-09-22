@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
+
 import {
   getLogLevelAnalytics,
   getServiceAnalytics,
+  getLogVolumeAnalytics,
 } from "../../services/analyticsService";
 
 const fallbackLevels = [
@@ -29,9 +31,24 @@ function normalizeAnalytics(data, fallback) {
   }));
 }
 
+function normalizeVolume(data) {
+  if (!data || typeof data !== "object") {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(data).map(([time, value]) => [
+      time,
+      Number(value) || 0,
+    ])
+  );
+}
+
 function LogAnalytics() {
   const [levelData, setLevelData] = useState([]);
   const [serviceData, setServiceData] = useState([]);
+  const [volumeData, setVolumeData] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
 
@@ -40,16 +57,27 @@ function LogAnalytics() {
 
     async function loadAnalytics() {
       try {
-        const [levels, services] = await Promise.all([
-          getLogLevelAnalytics(),
-          getServiceAnalytics(),
-        ]);
+        const [levels, services, volume] =
+          await Promise.all([
+            getLogLevelAnalytics(),
+            getServiceAnalytics(),
+            getLogVolumeAnalytics(30),
+          ]);
 
         if (!cancelled) {
-          setLevelData(normalizeAnalytics(levels, fallbackLevels));
-          setServiceData(
-            normalizeAnalytics(services, fallbackServices)
+          setLevelData(
+            normalizeAnalytics(levels, fallbackLevels)
           );
+
+          setServiceData(
+            normalizeAnalytics(
+              services,
+              fallbackServices
+            )
+          );
+
+          setVolumeData(normalizeVolume(volume));
+
           setUsingFallback(false);
           setLoading(false);
         }
@@ -59,6 +87,7 @@ function LogAnalytics() {
         if (!cancelled) {
           setLevelData(fallbackLevels);
           setServiceData(fallbackServices);
+          setVolumeData({});
           setUsingFallback(true);
           setLoading(false);
         }
@@ -72,9 +101,13 @@ function LogAnalytics() {
     };
   }, []);
 
+  /*
+   * Logs by Level
+   */
   const levelOption = {
     tooltip: {
       trigger: "item",
+      formatter: "{b}: {c} logs ({d}%)",
     },
 
     legend: {
@@ -86,6 +119,7 @@ function LogAnalytics() {
         name: "Log Level",
         type: "pie",
         radius: ["45%", "70%"],
+        minAngle: 8,
         avoidLabelOverlap: true,
 
         itemStyle: {
@@ -94,15 +128,34 @@ function LogAnalytics() {
         },
 
         label: {
-          show: true,
-          formatter: "{b}: {c}",
+          show: false,
         },
 
-        data: levelData,
+        data: levelData.map((item) => {
+          let itemColor;
+
+          if (item.name.toUpperCase() === "INFO") {
+            itemColor = "#3b82f6";
+          } else if (item.name.toUpperCase() === "ERROR") {
+            itemColor = "#ef4444";
+          } else if (item.name.toUpperCase() === "WARN") {
+            itemColor = "#f59e0b";
+          }
+
+          return {
+            ...item,
+            itemStyle: itemColor
+              ? { color: itemColor }
+              : undefined,
+          };
+        }),
       },
     ],
   };
 
+  /*
+   * Logs by Service
+   */
   const serviceOption = {
     tooltip: {
       trigger: "axis",
@@ -117,10 +170,59 @@ function LogAnalytics() {
 
     xAxis: {
       type: "category",
-      data: serviceData.map((item) => item.name),
+      data: serviceData.map(
+        (item) => item.name
+      ),
 
       axisLabel: {
         rotate: 20,
+      },
+    },
+
+    yAxis: {
+      type: "log",
+      min: 1,
+      axisLabel: {
+        formatter: "{value}",
+      },
+    },
+
+    series: [
+      {
+        name: "Logs",
+        type: "bar",
+        data: serviceData.map(
+          (item) => item.value
+        ),
+        barMaxWidth: 45,
+      },
+    ],
+  };
+
+  /*
+   * Log Volume
+   */
+  const volumeLabels = Object.keys(volumeData);
+  const volumeValues = Object.values(volumeData);
+
+  const volumeOption = {
+    tooltip: {
+      trigger: "axis",
+    },
+
+    grid: {
+      left: 50,
+      right: 20,
+      top: 30,
+      bottom: 50,
+    },
+
+    xAxis: {
+      type: "category",
+      data: volumeLabels,
+
+      axisLabel: {
+        rotate: 30,
       },
     },
 
@@ -131,9 +233,19 @@ function LogAnalytics() {
     series: [
       {
         name: "Logs",
-        type: "bar",
-        data: serviceData.map((item) => item.value),
-        barMaxWidth: 45,
+        type: "line",
+        smooth: true,
+        data: volumeValues,
+        symbol: "circle",
+        symbolSize: 5,
+
+        areaStyle: {
+          color: "rgba(99, 102, 241, 0.12)",
+        },
+
+        lineStyle: {
+          width: 2,
+        },
       },
     ],
   };
@@ -143,8 +255,10 @@ function LogAnalytics() {
       <div className="section-header">
         <div>
           <h2>Log Analytics</h2>
+
           <p>
-            Overview of log distribution across the platform
+            Overview of log distribution across the
+            platform
           </p>
         </div>
 
@@ -157,10 +271,23 @@ function LogAnalytics() {
 
       {loading ? (
         <div className="analytics-loading">
-          Loading analytics...
+          <div className="analytics-loading-card">
+            <div className="analytics-spinner" />
+
+            <div className="analytics-loading-content">
+              <h3>Loading analytics</h3>
+
+              <p>
+                Fetching log metrics and preparing
+                dashboard charts...
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="analytics-grid">
+
+          {/* Logs by Level */}
           <div className="analytics-card">
             <h3>Logs by Level</h3>
 
@@ -173,6 +300,7 @@ function LogAnalytics() {
             />
           </div>
 
+          {/* Logs by Service */}
           <div className="analytics-card">
             <h3>Logs by Service</h3>
 
@@ -184,6 +312,31 @@ function LogAnalytics() {
               }}
             />
           </div>
+
+          {/* Log Volume */}
+          <div className="analytics-card analytics-card-wide">
+            <h3>Log Volume</h3>
+
+            <p className="analytics-card-description">
+              Logs received per minute over the
+              last 30 minutes
+            </p>
+
+            {volumeLabels.length > 0 ? (
+              <ReactECharts
+                option={volumeOption}
+                style={{
+                  height: "320px",
+                  width: "100%",
+                }}
+              />
+            ) : (
+              <div className="analytics-empty">
+                No log volume data available.
+              </div>
+            )}
+          </div>
+
         </div>
       )}
     </section>

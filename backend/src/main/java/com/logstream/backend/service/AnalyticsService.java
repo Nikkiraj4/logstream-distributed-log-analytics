@@ -18,47 +18,61 @@ public class AnalyticsService {
     }
 
     public List<Map<String, Object>> getLogLevelAnalytics() {
+
         List<LogRecord> logs = getAllLogs();
 
         Map<String, Long> counts = new LinkedHashMap<>();
 
         for (LogRecord log : logs) {
+
             String level = log.getLevel();
 
             if (level == null || level.isBlank()) {
                 continue;
             }
 
-            counts.merge(level.toUpperCase(), 1L, Long::sum);
+            counts.merge(
+                    level.toUpperCase(),
+                    1L,
+                    Long::sum
+            );
         }
 
         return toAnalyticsList(counts);
     }
 
     public List<Map<String, Object>> getServiceAnalytics() {
+
         List<LogRecord> logs = getAllLogs();
 
         Map<String, Long> counts = new LinkedHashMap<>();
 
         for (LogRecord log : logs) {
+
             String service = log.getService();
 
             if (service == null || service.isBlank()) {
                 continue;
             }
 
-            counts.merge(service, 1L, Long::sum);
+            counts.merge(
+                    service,
+                    1L,
+                    Long::sum
+            );
         }
 
         return toAnalyticsList(counts);
     }
 
+    /**
+     * Retrieve all indexed logs for analytics.
+     *
+     * Unlike the normal search API, this method
+     * does not use the 100-result limit.
+     */
     private List<LogRecord> getAllLogs() {
-        return luceneService.searchLogs(
-                null,
-                null,
-                null
-        );
+        return luceneService.searchAllLogs();
     }
 
     private List<Map<String, Object>> toAnalyticsList(
@@ -67,8 +81,7 @@ public class AnalyticsService {
         List<Map<String, Object>> result =
                 new ArrayList<>();
 
-        for (Map.Entry<String, Long> entry :
-                counts.entrySet()) {
+        for (Map.Entry<String, Long> entry : counts.entrySet()) {
 
             Map<String, Object> item =
                     new LinkedHashMap<>();

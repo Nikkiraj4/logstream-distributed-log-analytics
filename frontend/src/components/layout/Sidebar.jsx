@@ -3,6 +3,7 @@ import {
   Bell,
   LayoutDashboard,
   Search,
+  Radio,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -45,6 +46,14 @@ function Sidebar() {
         >
           <Bell size={18} />
           <span>Alerts</span>
+        </NavLink>
+
+        <NavLink
+          to="/live-tail"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          <Radio size={18} />
+          <span>Live Tail</span>
         </NavLink>
       </nav>
 

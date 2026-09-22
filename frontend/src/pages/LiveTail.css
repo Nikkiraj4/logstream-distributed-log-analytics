@@ -1,0 +1,466 @@
+/* =========================================================
+   LIVE TAIL PAGE
+   ========================================================= */
+
+.live-tail-page {
+  width: 100%;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.live-tail-page .page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.live-tail-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.live-tail-title svg {
+  color: #2563eb;
+}
+
+.live-tail-page .page-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.live-tail-page .page-header p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.live-tail-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.live-tail-status svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.live-tail-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.live-tail-filters {
+  display: flex;
+  gap: 14px;
+}
+
+.live-tail-filter label {
+  display: block;
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.live-tail-filter select {
+  min-width: 170px;
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13px;
+  outline: none;
+}
+
+.live-tail-filter select:focus {
+  border-color: #2563eb;
+}
+
+.live-tail-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.live-tail-control-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.live-tail-control-button:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   LOG SECTION
+   ========================================================= */
+
+.live-tail-section {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.live-tail-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.live-tail-section-header h2 {
+  margin: 0 0 5px;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.live-tail-section-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.live-log-count {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   LIVE LOGS
+   ========================================================= */
+
+.live-logs-container {
+  max-height: 620px;
+  overflow-y: auto;
+}
+
+.live-log-row {
+  display: grid;
+  grid-template-columns: 90px 72px 150px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 8px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
+.live-log-row:last-child {
+  border-bottom: 0;
+}
+
+.live-log-row:hover {
+  background: #f8fafc;
+}
+
+.live-log-time {
+  color: #64748b;
+}
+
+.live-log-level {
+  width: fit-content;
+  padding: 4px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.live-level-info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.live-level-warn {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+.live-level-error {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.live-level-debug {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.live-log-service {
+  overflow: hidden;
+  color: #475569;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-log-message {
+  overflow: hidden;
+  color: #334155;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.live-tail-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.live-tail-empty svg {
+  margin-bottom: 14px;
+  color: #94a3b8;
+}
+
+.live-tail-empty h3 {
+  margin: 0 0 7px;
+  color: #334155;
+  font-size: 16px;
+}
+
+.live-tail-empty p {
+  max-width: 480px;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   DARK MODE
+   App.css uses .app-shell.dark-mode
+   ========================================================= */
+
+.app-shell.dark-mode .live-tail-page .page-header h1 {
+  color: #f9fafb;
+}
+
+.app-shell.dark-mode .live-tail-page .page-header p {
+  color: #9ca3af;
+}
+
+.app-shell.dark-mode .live-tail-title svg {
+  color: #60a5fa;
+}
+
+.app-shell.dark-mode .live-tail-status {
+  background: #14351f;
+  border-color: #285c3b;
+  color: #86efac;
+}
+
+.app-shell.dark-mode .live-tail-toolbar {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.app-shell.dark-mode .live-tail-filter label {
+  color: #9ca3af;
+}
+
+.app-shell.dark-mode .live-tail-filter select {
+  background: #0f172a;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.app-shell.dark-mode .live-tail-control-button {
+  background: #111827;
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+.app-shell.dark-mode .live-tail-control-button:hover {
+  background: #1f2937;
+}
+
+.app-shell.dark-mode .live-tail-section {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.app-shell.dark-mode .live-tail-section-header {
+  border-bottom-color: #1f2937;
+}
+
+.app-shell.dark-mode .live-tail-section-header h2 {
+  color: #f9fafb;
+}
+
+.app-shell.dark-mode .live-tail-section-header p {
+  color: #9ca3af;
+}
+
+.app-shell.dark-mode .live-log-count {
+  background: #172554;
+  color: #60a5fa;
+}
+
+.app-shell.dark-mode .live-log-row {
+  border-bottom-color: #1f2937;
+}
+
+.app-shell.dark-mode .live-log-row:hover {
+  background: #172033;
+}
+
+.app-shell.dark-mode .live-log-time {
+  color: #6b7280;
+}
+
+.app-shell.dark-mode .live-log-service {
+  color: #d1d5db;
+}
+
+.app-shell.dark-mode .live-log-message {
+  color: #d1d5db;
+}
+
+.app-shell.dark-mode .live-level-info {
+  background: #172554;
+  color: #93c5fd;
+}
+
+.app-shell.dark-mode .live-level-warn {
+  background: #3d3212;
+  color: #fde68a;
+}
+
+.app-shell.dark-mode .live-level-error {
+  background: #3f1d22;
+  color: #fca5a5;
+}
+
+.app-shell.dark-mode .live-level-debug {
+  background: #25204a;
+  color: #c4b5fd;
+}
+
+.app-shell.dark-mode .live-tail-empty svg {
+  color: #6b7280;
+}
+
+.app-shell.dark-mode .live-tail-empty h3 {
+  color: #d1d5db;
+}
+
+.app-shell.dark-mode .live-tail-empty p {
+  color: #9ca3af;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .live-tail-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .live-tail-filters {
+    flex-wrap: wrap;
+  }
+
+  .live-tail-actions {
+    justify-content: flex-end;
+  }
+
+  .live-log-row {
+    grid-template-columns: 80px 65px 120px minmax(0, 1fr);
+    gap: 9px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .live-tail-page .page-header {
+    flex-direction: column;
+  }
+
+  .live-tail-filters {
+    flex-direction: column;
+  }
+
+  .live-tail-filter select {
+    width: 100%;
+  }
+
+  .live-tail-actions {
+    justify-content: stretch;
+  }
+
+  .live-tail-control-button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .live-log-row {
+    display: block;
+    padding: 12px 14px;
+  }
+
+  .live-log-time,
+  .live-log-level,
+  .live-log-service {
+    margin-right: 8px;
+  }
+
+  .live-log-message {
+    display: block;
+    margin-top: 7px;
+  }
+}
