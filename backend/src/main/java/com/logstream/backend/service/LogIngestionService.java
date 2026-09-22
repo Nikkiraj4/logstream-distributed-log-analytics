@@ -1,6 +1,7 @@
 package com.logstream.backend.service;
 
 import com.logstream.backend.model.LogRecord;
+import com.logstream.backend.websocket.LiveTailHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +10,14 @@ import java.util.List;
 public class LogIngestionService {
 
     private final LuceneService luceneService;
+    private final LiveTailHandler liveTailHandler;
 
-    public LogIngestionService(LuceneService luceneService) {
+    public LogIngestionService(
+            LuceneService luceneService,
+            LiveTailHandler liveTailHandler) {
+
         this.luceneService = luceneService;
+        this.liveTailHandler = liveTailHandler;
     }
 
     /**
@@ -22,6 +28,8 @@ public class LogIngestionService {
         validate(logRecord);
 
         luceneService.indexLog(logRecord);
+
+        broadcast(logRecord);
     }
 
     /**
@@ -44,6 +52,51 @@ public class LogIngestionService {
         }
 
         luceneService.indexLogs(logRecords);
+
+        for (LogRecord logRecord : logRecords) {
+
+            broadcast(logRecord);
+        }
+    }
+
+    /**
+     * Send the accepted log to all connected Live Tail clients.
+     */
+    private void broadcast(LogRecord logRecord) {
+
+        String json =
+                "{"
+                        + "\"timestamp\":\""
+                        + escapeJson(logRecord.getTimestamp())
+                        + "\","
+                        + "\"service\":\""
+                        + escapeJson(logRecord.getService())
+                        + "\","
+                        + "\"level\":\""
+                        + escapeJson(logRecord.getLevel())
+                        + "\","
+                        + "\"message\":\""
+                        + escapeJson(logRecord.getMessage())
+                        + "\""
+                        + "}";
+
+        liveTailHandler.broadcast(json);
+    }
+
+    /**
+     * Escape characters that could break the JSON string.
+     */
+    private String escapeJson(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
     }
 
     private void validate(LogRecord logRecord) {
@@ -84,4 +137,3 @@ public class LogIngestionService {
         return value == null || value.trim().isEmpty();
     }
 }
-

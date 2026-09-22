@@ -8,6 +8,7 @@ import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import SearchLogs from "./pages/SearchLogs";
 import Alerts from "./pages/Alerts";
+import LiveTail from "./pages/LiveTail";
 
 import "./App.css";
 
@@ -51,6 +52,11 @@ function App() {
                       path="/alerts"
                       element={<Alerts />}
                     />
+
+                    <Route
+  path="/live-tail"
+  element={<LiveTail />}
+/>
 
                     <Route
                       path="*"

@@ -257,6 +257,9 @@ public class LuceneService {
 
     /**
      * Search logs.
+     *
+     * Normal search intentionally returns only
+     * the top 100 results.
      */
     public List<LogRecord> searchLogs(
             String keyword,
@@ -380,8 +383,7 @@ public class LuceneService {
                  * Return top 100 results.
                  *
                  * This limit is only for the normal
-                 * search API. Alert counting uses
-                 * countLogs() below.
+                 * search API.
                  */
                 var topDocs =
                         searcher.search(
@@ -425,6 +427,101 @@ public class LuceneService {
 
             throw new RuntimeException(
                     "Failed to search logs",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Retrieve all indexed logs for analytics.
+     *
+     * This method is separate from searchLogs()
+     * because the normal search API intentionally
+     * limits results to 100.
+     */
+    public List<LogRecord> searchAllLogs() {
+
+        List<LogRecord> results =
+                new ArrayList<>();
+
+        try {
+
+            /*
+             * Make recently indexed documents visible.
+             */
+            synchronized (commitLock) {
+
+                if (pendingDocuments.get() > 0) {
+
+                    indexWriter.commit();
+
+                    pendingDocuments.set(0);
+                }
+            }
+
+            if (!DirectoryReader.indexExists(
+                    directory)) {
+
+                return results;
+            }
+
+            try (DirectoryReader reader =
+                         DirectoryReader.open(directory)) {
+
+                IndexSearcher searcher =
+                        new IndexSearcher(reader);
+
+                Query finalQuery =
+                        new MatchAllDocsQuery();
+
+                /*
+                 * Retrieve all indexed documents.
+                 *
+                 * reader.numDocs() gives us the number
+                 * of live documents in the index.
+                 */
+                var topDocs =
+                        searcher.search(
+                                finalQuery,
+                                reader.numDocs()
+                        );
+
+                for (var scoreDoc :
+                        topDocs.scoreDocs) {
+
+                    Document document =
+                            searcher
+                                    .storedFields()
+                                    .document(
+                                            scoreDoc.doc
+                                    );
+
+                    LogRecord log =
+                            new LogRecord(
+                                    document.get(
+                                            "timestamp"
+                                    ),
+                                    document.get(
+                                            "service"
+                                    ),
+                                    document.get(
+                                            "level"
+                                    ),
+                                    document.get(
+                                            "message"
+                                    )
+                            );
+
+                    results.add(log);
+                }
+            }
+
+            return results;
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Failed to retrieve all logs for analytics",
                     e
             );
         }
