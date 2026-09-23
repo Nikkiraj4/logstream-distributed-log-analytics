@@ -1,157 +1,207 @@
-# LogStream — Distributed Log Analytics & Alerting Platform
+# LogStream ⚡
 
-LogStream is a distributed log analytics and alerting platform designed to ingest, index, search, analyze, monitor, and visualize application logs from distributed services.
+### Distributed Log Analytics & Alerting Platform
 
-The project combines a Java/Spring Boot backend with Apache Lucene, gRPC-based log ingestion, scheduled alert evaluation, WebSocket-based live log streaming, and a React analytics dashboard.
+LogStream is a full-stack observability platform for **log ingestion, indexing, search, analytics, alerting, and real-time monitoring**.
 
----
-
-## Overview
-
-Modern applications generate a large number of logs from different services. Searching through raw log files and identifying important events manually can become difficult as the volume of logs increases.
-
-LogStream provides a centralized platform where logs can be:
-
-- Ingested through gRPC
-- Validated and indexed using Apache Lucene
-- Searched through REST APIs
-- Analyzed by log level and service
-- Aggregated over time
-- Monitored using configurable alert rules
-- Streamed in real time through WebSockets
-- Visualized through a React dashboard
-
-The project was developed as an academic implementation of a distributed log analytics and alerting system.
+**Tech Stack:** Java • Spring Boot • gRPC • Apache Lucene • React • ECharts • WebSockets
 
 ---
 
-## Key Features
+## 🚀 Features
 
-### 1. Log Ingestion
-
-Logs are received by the Java backend through gRPC.
-
-Each log contains information such as:
-
-- Timestamp
-- Service
-- Log level
-- Message
-
-The backend validates the incoming log before indexing it.
+- 📥 **gRPC Log Ingestion** — Receive and validate logs through gRPC.
+- 🔎 **Log Search** — Search and filter indexed logs using Apache Lucene.
+- 📊 **Analytics Dashboard** — Visualize logs by level, service, and time.
+- 🚨 **Alerting Engine** — Create rules and evaluate them using scheduled tasks.
+- ⚡ **Live Tail** — Stream newly ingested logs in real time using WebSockets.
+- 🎨 **React UI** — Dashboard, Search Logs, Alerts, and Live Tail interfaces.
 
 ---
 
-### 2. Apache Lucene Search & Indexing
-
-Apache Lucene is used as the search and indexing engine.
-
-Logs are stored as Lucene documents and can be searched based on available log fields.
-
-The search system supports filtering logs and retrieving matching results through the backend API.
-
-The normal search operation limits returned results to a maximum of 100 records, while separate counting operations are used for analytics and alert evaluation.
-
----
-
-### 3. Analytics Dashboard
-
-The React dashboard provides visual analytics for the indexed logs.
-
-The dashboard includes:
-
-- Logs by Level
-- Logs by Service
-- Log Volume over Time
-
-Charts are implemented using Apache ECharts.
-
-The log volume visualization displays the number of logs received per minute over the selected recent time window.
-
----
-
-### 4. Alerting Engine
-
-LogStream includes a scheduled alert evaluation engine.
-
-Users can configure alert rules with:
-
-- Alert name
-- Service
-- Condition
-- Threshold
-- Time window
-- Severity
-- Enabled/disabled state
-
-Enabled alerts are evaluated periodically by the backend.
-
-The implemented Error Rate condition checks ERROR-level logs within the configured time window and compares the number of matching logs against the configured threshold.
-
-When an alert condition is breached, the system records the triggered state and simulates a webhook notification through the backend console.
-
----
-
-### 5. Real-Time Live Tail
-
-The Live Tail module provides real-time monitoring of incoming logs.
-
-The backend uses WebSockets to broadcast newly ingested logs to connected clients.
-
-The frontend Live Tail interface provides:
-
-- Connection status
-- Real-time incoming logs
-- Service filtering
-- Log-level filtering
-- Pause/Resume controls
-- Clear logs functionality
-
----
-
-## System Architecture
+## 🏗️ Architecture
 
 ```text
-                    +----------------------+
-                    |     Log Producer     |
-                    |    / gRPC Client     |
-                    +----------+-----------+
-                               |
-                               | gRPC
-                               v
-                    +----------------------+
-                    |   Java / Spring Boot |
-                    |       Backend        |
-                    +----------+-----------+
-                               |
-                 +-------------+-------------+
-                 |                           |
-                 v                           v
-        +------------------+       +------------------+
-        | Log Ingestion    |       | WebSocket        |
-        | Service          |       | Live Tail        |
-        +--------+---------+       +--------+---------+
-                 |                          |
-                 v                          |
-        +------------------+                |
-        | Apache Lucene    |                |
-        | Index            |                |
-        +--------+---------+                |
-                 |                          |
-        +--------+---------+                |
-        |                  |                |
-        v                  v                |
- +-------------+    +-------------+        |
- | Search APIs |    | Analytics & |        |
- |             |    | Alert Engine|        |
- +------+------+    +------+------+        |
-        |                  |                |
-        +---------+--------+                |
-                  |                         |
-                  v                         v
-          +--------------------------------------+
-          |          React Frontend              |
-          |                                      |
-          | Dashboard | Search | Alerts | Live  |
-          |                         Tail         |
-          +--------------------------------------+
+Log Producer
+     │
+     │ gRPC
+     ▼
+Spring Boot Backend
+     │
+     ├── Log Ingestion
+     │       │
+     │       ▼
+     │   Apache Lucene
+     │
+     ├── Search
+     ├── Analytics
+     └── Alert Engine
+             │
+             ▼
+        React Frontend
+             │
+      ┌──────┼────────┐
+      ▼      ▼        ▼
+  Dashboard Search   Alerts
+
+Log Ingestion
+      │
+      │ WebSocket
+      ▼
+  Live Tail
+```
+
+---
+ ## 🛠️ Tech Stack
+### Backend
+- Java
+- Spring Boot
+- Apache Lucene
+- gRPC
+- WebSocket
+- Maven
+
+### Frontend
+- React
+- Vite
+- ECharts
+- Lucide React
+- CSS
+
+---
+## 📁 Project Structure
+```text
+logstream-distributed-log-analytics/
+│
+├── backend/
+│   ├── src/
+│   └── pom.xml
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── App.jsx
+│   │   └── App.css
+│   ├── package.json
+│   └── vite.config.js
+│
+└── README.md
+```
+
+---
+## 👩‍💻 My Contribution
+
+My primary contribution was the frontend development and frontend-backend integration.
+
+I worked on:
+
+- Dashboard UI and analytics charts
+- Search Logs interface
+- Alerts interface
+- Live Tail interface
+- ECharts integration
+- Analytics API integration
+- WebSocket Live Tail integration
+- Service and log-level filtering
+- Pause / Resume functionality
+- UI styling, loading states, and final cleanup
+
+## 🔍 Where to Find My Work
+Main frontend directory:
+
+```text
+frontend/src/
+```
+
+Important files:
+```text
+
+frontend/src/components/dashboard/LogAnalytics.jsx
+frontend/src/components/layout/Sidebar.jsx
+frontend/src/pages/Alerts.jsx
+frontend/src/pages/LiveTail.jsx
+frontend/src/pages/LiveTail.css
+frontend/src/services/analyticsService.js
+frontend/src/App.jsx
+frontend/src/App.css
+```
+
+You can also view my final frontend work on the:
+
+```text frontend-ui-refinement ``` branch.
+
+---
+## ▶️ Run Locally
+# Backend
+```text
+cd backend
+./mvnw spring-boot:run
+```
+# Backend:
+```
+HTTP → http://localhost:8080
+gRPC → localhost:9090
+```
+# Frontend
+Open another terminal:
+```text
+cd frontend
+npm install
+npm run dev
+```
+
+Then open the Vite URL shown in the terminal, usually:
+```text
+http://localhost:5173
+```
+----
+## 📡 Main APIs
+```text
+GET    /api/analytics/levels
+GET    /api/analytics/services
+GET    /api/analytics/volume?minutes=30
+
+GET    /api/alerts
+POST   /api/alerts
+PUT    /api/alerts/{id}
+DELETE /api/alerts/{id}
+
+WebSocket:
+ws://localhost:8080/ws/livetail
+```
+
+---
+## 🧪 Verified
+ - gRPC log ingestion
+ - Lucene indexing & search
+ - Analytics dashboard
+ - Time-based log aggregation
+ - Alert creation & evaluation
+ - Alert triggering
+ - Simulated webhook
+ - WebSocket Live Tail
+ - Service & level filtering
+ - Frontend linting
+ - Backend compilation
+
+ ---
+## 📌 Project Status
+
+Completed — Academic Project
+
+LogStream demonstrates a complete flow from:
+```text
+Log Ingestion → Lucene → Search / Analytics / Alerts → React Dashboard
+                                      │
+                                      └── WebSocket → Live Tail
+```
+----
+🔗 Repository
+```text
+https://github.com/Nikkiraj4/logstream-distributed-log-analytics
+```
+
+
+
